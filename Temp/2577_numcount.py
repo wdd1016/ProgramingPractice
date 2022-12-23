@@ -12,4 +12,3 @@ while k > 0:
 
 for i in range(10):
     print(lst.count(i))
-    
