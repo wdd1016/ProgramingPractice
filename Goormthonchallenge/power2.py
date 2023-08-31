@@ -3,7 +3,7 @@ from collections import deque
 input = sys.stdin.readline
 
 n, k = map(int, input().split())
-cnt = [0 for i in range(32)]
+cnt = [0 for i in range(31)]
 
 vmap = []
 for i in range(n):
@@ -33,7 +33,7 @@ for i in range(n):
 		if (vilcnt >= k):
 			cnt[mrc] += 1
 maxcnt = max(cnt)
-for i in range(n, -1, -1):
+for i in range(30, -1, -1):
 	if (cnt[i] == maxcnt):
 		print(i)
 		break
