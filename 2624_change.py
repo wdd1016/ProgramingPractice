@@ -14,8 +14,12 @@ for _ in range(k):
 
 lst = [0 for _ in range(10001)]
 
-# def find_exchange_count(money, lst):
-# 	if lst[money] == 0:
-# 		for i in range(k):
-# 			temp = find_exchange_count(money - p[i], lst)
-# 			if
+def find_exchange_count(money, lst):
+    if money <= 0:
+        return
+    if lst[money] == 0:
+        temp = []
+        for i in range(k):
+            temp.append(find_exchange_count(money - p[i], lst))
+        lst[money] = max(temp)
+            
