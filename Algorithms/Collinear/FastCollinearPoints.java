@@ -25,46 +25,70 @@ public class FastCollinearPoints {
         }
 
         ArrayList<LineSegment> foundSegments = new ArrayList<>();
-        ArrayList<Point> foundStartPoints = new ArrayList<>();
+        ArrayList<Point> foundEndPoints = new ArrayList<>();
+        ArrayList<Double> foundSlopes = new ArrayList<>();
         for (int i = 0; i < copiedPoints.length - 3; i++) {
             Point basePoint = copiedPoints[i];
             Point[] aroundPoints = Arrays.copyOfRange(copiedPoints, i + 1, copiedPoints.length);
+            double[] aroundSlopes = new double[aroundPoints.length];
             Comparator<Point> comparator = basePoint.slopeOrder();
 
             Arrays.sort(aroundPoints, comparator);
-            int count = 1;
             for (int j = 0; j < aroundPoints.length; j++) {
-                if (j == aroundPoints.length - 1) {
+                aroundSlopes[j] = basePoint.slopeTo(aroundPoints[j]);
+            }
+
+            int count = 0;
+            for (int j = 0; j < aroundPoints.length - 1; j++) {
+                count++;
+                if (aroundSlopes[j] != aroundSlopes[j + 1]) {
                     if (count >= 3) {
-                        int k;
-                        for (k = 0; k < foundStartPoints.size(); k++) {
-                            Point pt = foundStartPoints.get(k);
-                            if (pt.slopeTo(basePoint) == pt.slopeTo(aroundPoints[j])) break;
-                        }
-                        if (k == foundStartPoints.size()) {
-                            foundSegments.add(new LineSegment(basePoint, aroundPoints[j]));
-                            foundStartPoints.add(basePoint);
-                        }
+                        foundSegments.add(new LineSegment(basePoint, aroundPoints[j]));
+                        foundEndPoints.add(aroundPoints[j]);
+                        foundSlopes.add(aroundSlopes[j]);
                     }
-                } else if (basePoint.slopeTo(aroundPoints[j]) == basePoint.slopeTo(aroundPoints[j + 1])) {
-                    count++;
-                } else {
-                    if (count >= 3) {
-                        int k;
-                        for (k = 0; k < foundStartPoints.size(); k++) {
-                            Point pt = foundStartPoints.get(k);
-                            if (pt.slopeTo(basePoint) == pt.slopeTo(aroundPoints[j])) break;
-                        }
-                        if (k == foundStartPoints.size()) {
-                            foundSegments.add(new LineSegment(basePoint, aroundPoints[j]));
-                            foundStartPoints.add(basePoint);
-                        }
-                    }
-                count = 1;
+                count = 0;
                 }
             }
+            if (count >= 2) {
+                foundSegments.add(new LineSegment(basePoint, aroundPoints[aroundPoints.length - 1]));
+                foundEndPoints.add(aroundPoints[aroundPoints.length - 1]);
+                foundSlopes.add(aroundSlopes[aroundPoints.length - 1]);
+            }
         }
-        lines = foundSegments.toArray(new LineSegment[0]);
+
+        ArrayList<Integer> indices = new ArrayList<>();
+        for (int i = 0; i < foundSegments.size(); i++) indices.add(i);
+
+        indices.sort((x, y) -> {
+                    int slopeComparison = Double.compare(foundSlopes.get(x), foundSlopes.get(y));
+                    if (slopeComparison != 0) {
+                        return slopeComparison;
+                    } else {
+                        return foundEndPoints.get(x).compareTo(foundEndPoints.get(y));
+                    }
+                });
+
+        ArrayList<LineSegment> sortedSegments = new ArrayList<>();
+        ArrayList<Point> sortedEndPoints = new ArrayList<>();
+        ArrayList<Double> sortedSlopes = new ArrayList<>();
+        for (int index : indices) {
+            sortedSegments.add(foundSegments.get(index));
+            sortedEndPoints.add(foundEndPoints.get(index));
+            sortedSlopes.add(foundSlopes.get(index));
+        }
+
+        ArrayList<LineSegment> finalSegments = new ArrayList<>();
+
+        if (sortedSegments.size() > 0) finalSegments.add(sortedSegments.get(0));
+        for (int i = 1; i < sortedSegments.size(); i++) {
+            if (Double.compare(sortedSlopes.get(i), sortedSlopes.get(i - 1)) != 0
+                    || sortedEndPoints.get(i).compareTo(sortedEndPoints.get(i - 1)) != 0) {
+                finalSegments.add(sortedSegments.get(i));
+            }
+        }
+
+        lines = finalSegments.toArray(new LineSegment[0]);
     }
 
 

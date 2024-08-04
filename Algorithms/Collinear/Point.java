@@ -50,8 +50,11 @@ public class Point implements Comparable<Point> {
         return new Comparator<Point>() {
             @Override
             public int compare(Point o1, Point o2) {
-                if (slopeTo(o1) < slopeTo(o2)) return -1;
-                else if (slopeTo(o1) > slopeTo(o2)) return 1;
+                double slope1 = slopeTo(o1);
+                double slope2 = slopeTo(o2);
+
+                if (slope1 < slope2) return -1;
+                else if (slope1 > slope2) return 1;
                 else return 0;
             }
         };
