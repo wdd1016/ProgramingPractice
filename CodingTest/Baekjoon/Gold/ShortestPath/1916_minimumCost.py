@@ -25,12 +25,12 @@ while q:
     if dis > distance[node]:  # 이미 저장된 최소비용이 현재값보다 작다면
         continue
 
-    for list in graph[node]:
-        newCost = list[1] + distance[node]  # node2로 가는 비용 + 현재까지의 최소 비용
-        if (
-            newCost < distance[list[0]]
-        ):  # newCost가 기존 node2까지의 최소비용보다 작다면
-            distance[list[0]] = newCost
-            heapq.heappush(q, (newCost, list[0]))
+    for lst in graph[node]:
+        newCost = lst[1] + distance[node]  # node2로 가는 비용 + 현재까지의 최소 비용
+
+        # newCost가 기존 node2까지의 최소비용보다 작다면
+        if newCost < distance[lst[0]]:
+            distance[lst[0]] = newCost
+            heapq.heappush(q, (newCost, lst[0]))
 
 print(distance[end])
